@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.terasoluna.gfw</groupId>
         <artifactId>terasoluna-gfw-parent</artifactId>
-        <version>5.0.1.RELEASE</version>
+        <version>5.1.0-SNAPSHOT</version>
     </parent>
 
     <properties>
