@@ -1,7 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xsi:schemaLocation="
+         http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/jms
+         http://www.springframework.org/schema/jms/spring-jms.xsd
+       ">
 
+    <!-- Settings for embedded ActiveMQ -->
+    <bean id="brokerService"
+          class="org.apache.activemq.broker.BrokerService"/>
+    <bean id="jmsConnectionFactory"
+          class="org.apache.activemq.ActiveMQConnectionFactory">
+        <constructor-arg value="vm://localhost"/>
+    </bean>
+
+    <!-- Setting for transaction management -->
+    <bean id="jmsTransactionManager"
+          class="org.springframework.jms.connection.JmsTransactionManager">
+        <property name="connectionFactory" ref="jmsConnectionFactory"/>
+    </bean>
+
+    <!-- Settings for converting payload -->
+    <bean id="jmsMessagingMessageConverter"
+          class="org.springframework.jms.support.converter.MessagingMessageConverter">
+        <constructor-arg ref="jmsMappingJackson2MessageConverter"/>
+        <constructor-arg>
+            <bean class="org.springframework.jms.support.SimpleJmsHeaderMapper"/>
+        </constructor-arg>
+    </bean>
+    <bean id="jmsMappingJackson2MessageConverter"
+          class="org.springframework.jms.support.converter.MappingJackson2MessageConverter">
+        <property name="typeIdPropertyName" value="typeId"/>
+    </bean>
+
+    <!-- Setting for client components (JmsTemplate & JmsMessageTemplate) -->
+    <bean id="jmsMessagingTemplate"
+          class="org.springframework.jms.core.JmsMessagingTemplate">
+        <property name="jmsTemplate" ref="jmsTemplate"/>
+        <property name="jmsMessageConverter" ref="jmsMessagingMessageConverter"/>
+    </bean>
+    <bean id="jmsTemplate"
+          class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="jmsConnectionFactory"/>
+        <property name="messageConverter" ref="jmsMappingJackson2MessageConverter"/>
+        <property name="receiveTimeout" value="${jmsTemplate.receiveTimeout:3000}"/>
+        <property name="sessionTransacted" value="true"/>
+    </bean>
+
+    <!-- Settings for server components (enable @JmsListener & JmsListenerContainer)-->
+    <jms:annotation-driven/>
+    <bean id="jmsListenerContainerFactory"
+          class="org.springframework.jms.config.DefaultJmsListenerContainerFactory">
+        <property name="connectionFactory" ref="jmsConnectionFactory"/>
+        <property name="messageConverter" ref="jmsMappingJackson2MessageConverter"/>
+        <property name="sessionTransacted" value="true"/>
+        <property name="transactionManager" ref="jmsTransactionManager"/>
+    </bean>
 
 </beans>
