@@ -51,13 +51,17 @@
     </bean>
 
     <!-- Settings for server components (enable @JmsListener & JmsListenerContainer)-->
-    <jms:annotation-driven/>
+    <jms:annotation-driven handler-method-factory="messageHandlerMethodFactory"/>
     <bean id="jmsListenerContainerFactory"
           class="org.springframework.jms.config.DefaultJmsListenerContainerFactory">
         <property name="connectionFactory" ref="jmsConnectionFactory"/>
         <property name="messageConverter" ref="jmsMappingJackson2MessageConverter"/>
         <property name="sessionTransacted" value="true"/>
         <property name="transactionManager" ref="jmsTransactionManager"/>
+    </bean>
+    <bean id="messageHandlerMethodFactory"
+          class="org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory">
+        <property name="validator" ref="validator"/>
     </bean>
 
 </beans>
