@@ -8,15 +8,23 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Service;
+import org.springframework.util.IdGenerator;
 import org.springframework.validation.annotation.Validated;
+import org.terasoluna.gfw.common.date.jodatime.JodaTimeDateFactory;
 
-import java.util.Date;
+import javax.inject.Inject;
 import java.util.UUID;
 
 @Service
 public class TodoJmsService {
 
     private static final Logger logger = LoggerFactory.getLogger(TodoJmsService.class);
+
+    @Inject
+    JodaTimeDateFactory dateFactory;
+
+    @Inject
+    IdGenerator idGenerator;
 
     @JmsListener(destination = "TodoQueue")
     @SendTo("ReplyTodoQueue")
@@ -27,8 +35,8 @@ public class TodoJmsService {
         logger.debug("Title : {}", todo.getTitle());
         logger.debug("Description : {}", todo.getDescription());
 
-        todo.setTodoId(UUID.randomUUID().toString());
-        todo.setCreatedAt(new Date());
+        todo.setTodoId(idGenerator.generateId().toString());
+        todo.setCreatedAt(dateFactory.newDate());
 
         return todo;
     }

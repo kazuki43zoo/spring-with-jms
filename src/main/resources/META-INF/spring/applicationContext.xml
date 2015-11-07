@@ -57,5 +57,8 @@
 
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
 
+    <bean id="dateFactory" class="org.terasoluna.gfw.common.date.jodatime.DefaultJodaTimeDateFactory"/>
+
+    <bean id="idGenerator" class="org.springframework.util.JdkIdGenerator" />
 
 </beans>

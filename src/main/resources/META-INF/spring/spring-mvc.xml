@@ -19,6 +19,15 @@
             <bean
                 class="org.springframework.security.web.bind.support.AuthenticationPrincipalArgumentResolver" />
         </mvc:argument-resolvers>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <constructor-arg>
+                    <bean class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+                        <property name="indentOutput" value="true"/>
+                    </bean>
+                </constructor-arg>
+            </bean>
+        </mvc:message-converters>
     </mvc:annotation-driven>
 
     <mvc:default-servlet-handler />

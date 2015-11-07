@@ -3,13 +3,11 @@ package com.example.app.todo;
 import com.example.domain.model.Todo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.jms.core.JmsMessageOperations;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 
@@ -27,6 +25,7 @@ public class TodoRestController {
     JmsOperations jmsOperations;
 
     @RequestMapping(method = RequestMethod.POST, headers = "X-Using-Template=jmsTemplate")
+    @ResponseStatus(HttpStatus.CREATED)
     public Todo createTodoUsingJmsTemplate(@RequestBody Todo todo) {
 
         logger.debug("start sending.");
@@ -41,6 +40,7 @@ public class TodoRestController {
     }
 
     @RequestMapping(method = RequestMethod.POST, headers = "X-Using-Template=jmsMessageTemplate")
+    @ResponseStatus(HttpStatus.CREATED)
     public Todo createTodoUsingJmsMessageTemplate(@RequestBody Todo todo) {
 
         logger.debug("start sending.");
